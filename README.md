@@ -73,7 +73,7 @@ docker build -t pneumoscan .
 docker run -p 10000:10000 -e GROQ_API_KEY=your_key_here pneumoscan
 ```
 
-Open [http://localhost:10000](http://localhost:10000) in your browser.
+
 
 ---
 
@@ -98,32 +98,6 @@ echo "GROQ_API_KEY=your_key_here" > .env
 python3 app.py
 ```
 
-Open [http://localhost:10000](http://localhost:10000) in your browser.
-
----
-
-## ☁️ Deploy on Render
-
-1. Push this repo to GitHub
-2. Go to [render.com](https://render.com) → **New Web Service**
-3. Connect your GitHub repo
-4. Select **Docker** as the environment
-5. Add environment variable: `GROQ_API_KEY` = your key
-6. Deploy 🚀
-
-Render will auto-detect the `Dockerfile` and build/run the container.
-
----
-
-## 🔐 Environment Variables
-
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `GROQ_API_KEY` | Optional | Groq API key for AI chat assistant |
-| `PORT` | Auto-set | Port (default: 10000, Render sets automatically) |
-
-> The app works without `GROQ_API_KEY` — the AI chat feature will just be disabled.
-
 ---
 
 ## 🧠 Model Details
@@ -147,4 +121,4 @@ Render will auto-detect the `Dockerfile` and build/run the container.
 
 ---
 
-<p align="center">Made with ❤️ by <strong>Aditya</strong></p>
+<p align="center">Made with 🧠 by <strong>Aditya</strong></p>
