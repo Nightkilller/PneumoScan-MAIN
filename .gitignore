@@ -1,0 +1,42 @@
+# 🔥 Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 🧪 Virtual environment
+venv/
+env/
+.venv/
+
+# 🍏 macOS
+.DS_Store
+
+# 🔐 Environment variables / secrets
+.env
+
+# 📦 Model files (keep only the one you really need)
+*.h5
+*.keras
+*.pt
+*.pth
+
+# 🧠 Jupyter
+.ipynb_checkpoints/
+
+# 🗂️ Logs
+*.log
+
+# ⚙️ Build / cache
+build/
+dist/
+*.egg-info/
+
+# 🧰 VS Code
+.vscode/
+
+# 🧪 Temporary uploads (if your app creates them)
+uploads/
+
+# 🧨 System files
+Thumbs.db
