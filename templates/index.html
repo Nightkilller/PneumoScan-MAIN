@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PneumoScan — AI-Powered Pneumonia Detection</title>
+    <meta name="description"
+        content="AI-powered chest X-ray analysis for real-time pneumonia detection. Upload your scan for instant results." />
+
+    <!-- Favicon (lungs emoji) -->
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🫁</text></svg>" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ["Inter", "system-ui", "sans-serif"] },
+                    colors: {
+                        med: {
+                            50: "#f0f9ff",
+                            100: "#e0f2fe",
+                            200: "#bae6fd",
+                            300: "#7dd3fc",
+                            400: "#38bdf8",
+                            500: "#0ea5e9",
+                            600: "#0284c7",
+                            700: "#0369a1",
+                            800: "#075985",
+                            900: "#0c4a6e",
+                        }
+                    }
+                },
+            },
+        };
+    </script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
+
+    <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+
+<body
+    class="min-h-screen bg-gradient-to-br from-slate-50 via-sky-50/40 to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 font-sans antialiased text-slate-800 dark:text-slate-200 overflow-x-hidden transition-colors duration-300">
+
+    <!-- ══════════ Floating particles container ══════════ -->
+    <div id="particles" class="fixed inset-0 z-0 pointer-events-none overflow-hidden" aria-hidden="true"></div>
+
+    <!-- ══════════ Soft ambient shapes ══════════ -->
+    <div class="ambient-bg" aria-hidden="true"></div>
+
+    <!-- ══════════ TOP NAV ══════════ -->
+    <nav class="sticky top-0 z-50 nav-glass flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3">
+        <div class="flex items-center gap-2.5">
+            <div
+                class="w-9 h-9 rounded-xl bg-gradient-to-br from-med-500 to-med-700 flex items-center justify-center shadow-md shadow-med-500/20">
+                <!-- Lungs Icon -->
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M12 4v8m0 0c0 2-1.5 4-4.5 6C5 19.5 3 18 3 15c0-2 1-4.5 2-6.5S7 4 8 3.5c.5-.25 1-.25 1 .5m3 8c0 2 1.5 4 4.5 6C19 19.5 21 18 21 15c0-2-1-4.5-2-6.5S17 4 16 3.5c-.5-.25-1-.25-1 .5" />
+                </svg>
+            </div>
+            <div>
+                <span class="text-base font-bold text-med-700 dark:text-med-400 tracking-wide">PneumoScan</span>
+                <span class="hidden sm:inline text-xs text-slate-400 dark:text-slate-500 ml-1.5">AI Diagnostics</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <span
+                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200/60 dark:border-emerald-500/20">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="text-[10px] sm:text-xs font-semibold text-emerald-700 dark:text-emerald-400">System
+                    Active</span>
+            </span>
+            <span id="liveTime"
+                class="hidden sm:inline text-xs text-slate-400 dark:text-slate-500 font-mono tabular-nums"></span>
+
+            <!-- Theme Toggle -->
+            <button id="themeToggle"
+                class="w-9 h-9 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                title="Toggle theme">
+                <!-- Sun icon (shown in dark mode) -->
+                <svg id="sunIcon" class="w-4.5 h-4.5 text-amber-500 hidden dark:block" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <!-- Moon icon (shown in light mode) -->
+                <svg id="moonIcon" class="w-4.5 h-4.5 text-slate-600 block dark:hidden" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ══════════ HERO ══════════ -->
+    <header class="relative z-10 text-center pt-6 sm:pt-8 pb-4 sm:pb-6 px-4 animate-fade-down">
+        <div
+            class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-med-50 dark:bg-med-500/10 border border-med-200/60 dark:border-med-500/20 mb-3 sm:mb-4">
+            <svg class="w-3.5 h-3.5 text-med-600 dark:text-med-400" fill="none" stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            <span class="text-xs font-semibold text-med-700 dark:text-med-400 tracking-wide">Dual-Stage AI
+                Pipeline</span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+            AI-Powered <span class="text-med-600 dark:text-med-400">Pneumonia Detection</span>
+        </h1>
+        <p class="mt-2 text-sm sm:text-base text-slate-500 dark:text-slate-400 max-w-md mx-auto">Upload a chest X-ray
+            for instant AI
+            analysis with professional diagnostic reporting</p>
+    </header>
+
+    <!-- ══════════ MAIN CONTENT — 3-column layout ══════════ -->
+    <main class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pb-8 sm:pb-12">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5">
+
+            <!-- ─── LEFT: Form + Data Cards ─── -->
+            <div class="lg:col-span-5 flex flex-col gap-4 sm:gap-5 animate-fade-up">
+
+                <!-- Mobile data cards row -->
+                <div class="grid grid-cols-3 gap-2.5 lg:hidden" style="animation-delay:.1s">
+                    <div class="card-glass rounded-xl p-2.5 text-center">
+                        <div
+                            class="text-[8px] sm:text-[9px] uppercase tracking-widest text-slate-400 dark:text-slate-500 font-semibold">
+                            Confidence</div>
+                        <div class="relative w-12 h-12 sm:w-14 sm:h-14 mx-auto mt-1">
+                            <canvas id="confidenceChartMobile" width="56" height="56"></canvas>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span id="confChartValMobile"
+                                    class="text-[10px] sm:text-xs font-bold text-med-600 dark:text-med-400 tabular-nums">--</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-glass rounded-xl p-2.5 text-center">
+                        <div
+                            class="text-[8px] sm:text-[9px] uppercase tracking-widest text-slate-400 dark:text-slate-500 font-semibold">
+                            Quality</div>
+                        <div class="relative w-12 h-12 sm:w-14 sm:h-14 mx-auto mt-1">
+                            <canvas id="qualityChartMobile" width="56" height="56"></canvas>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span id="qualChartValMobile"
+                                    class="text-[10px] sm:text-xs font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">--</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-glass rounded-xl p-2.5 text-center">
+                        <div
+                            class="text-[8px] sm:text-[9px] uppercase tracking-widest text-slate-400 dark:text-slate-500 font-semibold">
+                            Status</div>
+                        <div class="flex flex-col items-center mt-2 gap-1">
+                            <div
+                                class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/30 animate-pulse">
+                            </div>
+                            <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">Online</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Patient Form -->
+                <div class="card-glass rounded-2xl p-5 sm:p-6">
+                    <h2
+                        class="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-med-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        Patient Details
+                    </h2>
+                    <form id="scanForm" enctype="multipart/form-data" class="space-y-3.5 sm:space-y-4">
+                        <div>
+                            <label for="patientName" class="field-label">Patient Name</label>
+                            <input id="patientName" name="patient_name" type="text" placeholder="e.g. John Doe"
+                                class="field-input" />
+                        </div>
+                        <div>
+                            <label for="patientAge" class="field-label">Age</label>
+                            <input id="patientAge" name="patient_age" type="number" min="0" max="150"
+                                placeholder="e.g. 45" class="field-input" />
+                        </div>
+                        <div>
+                            <label for="notes" class="field-label">Notes <span
+                                    class="text-slate-300 dark:text-slate-600 font-normal">(optional)</span></label>
+                            <textarea id="notes" name="notes" rows="2" placeholder="Clinical observations…"
+                                class="field-input resize-none"></textarea>
+                        </div>
+
+                        <!-- Upload -->
+                        <div>
+                            <label class="field-label">Chest X-ray</label>
+                            <div id="dropZone" class="drop-zone group">
+                                <input id="xrayInput" type="file" name="xray" accept="image/*" class="hidden" />
+                                <div id="dropContent" class="flex flex-col items-center gap-2 pointer-events-none">
+                                    <div
+                                        class="w-12 h-12 rounded-2xl bg-med-50 dark:bg-med-500/10 border border-med-200/50 dark:border-med-500/20 flex items-center justify-center group-hover:bg-med-100 dark:group-hover:bg-med-500/20 transition">
+                                        <svg class="w-6 h-6 text-med-400" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                    </div>
+                                    <p class="text-sm text-slate-500 dark:text-slate-400">Drag & drop or <span
+                                            class="text-med-600 dark:text-med-400 font-semibold cursor-pointer underline underline-offset-2 decoration-med-300 dark:decoration-med-500">browse</span>
+                                    </p>
+                                    <p class="text-[10px] text-slate-400 dark:text-slate-500">PNG, JPG, JPEG, BMP, WebP
+                                    </p>
+                                </div>
+                                <img id="previewImg" class="hidden max-h-40 rounded-xl object-contain"
+                                    alt="X-ray preview" />
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="flex gap-3 pt-1">
+                            <button id="analyzeBtn" type="submit" class="flex-1 btn-primary">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                                Analyze
+                            </button>
+                            <button id="clearBtn" type="button" class="btn-secondary">Clear</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Desktop data cards row -->
+                <div class="hidden lg:grid grid-cols-3 gap-3">
+                    <!-- AI Confidence -->
+                    <div
+                        class="card-glass rounded-2xl p-4 text-center group hover:-translate-y-1 transition-all duration-300">
+                        <div class="card-label">AI Confidence</div>
+                        <div class="relative w-16 h-16 mx-auto mt-2">
+                            <canvas id="confidenceChart" width="64" height="64"></canvas>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span id="confChartVal"
+                                    class="text-sm font-bold text-med-600 dark:text-med-400 tabular-nums">--</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Image Quality -->
+                    <div
+                        class="card-glass rounded-2xl p-4 text-center group hover:-translate-y-1 transition-all duration-300">
+                        <div class="card-label">Image Quality</div>
+                        <div class="relative w-16 h-16 mx-auto mt-2">
+                            <canvas id="qualityChart" width="64" height="64"></canvas>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span id="qualChartVal"
+                                    class="text-sm font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">--</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Model Status -->
+                    <div
+                        class="card-glass rounded-2xl p-4 text-center group hover:-translate-y-1 transition-all duration-300">
+                        <div class="card-label">Model Status</div>
+                        <div class="flex flex-col items-center mt-3 gap-1.5">
+                            <div
+                                class="w-3 h-3 rounded-full bg-emerald-500 shadow-md shadow-emerald-500/30 animate-pulse">
+                            </div>
+                            <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400">Online</span>
+                            <span class="text-[9px] text-slate-400 dark:text-slate-500 font-medium">Dual-Stage</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── CENTER: Results ─── -->
+            <div class="lg:col-span-3 flex flex-col gap-4 sm:gap-5">
+
+                <!-- Loading -->
+                <div id="loadingState"
+                    class="hidden card-glass rounded-2xl p-6 flex flex-col items-center gap-4 animate-fade-up">
+                    <div class="loader"></div>
+                    <p class="text-med-600 dark:text-med-400 text-sm font-medium tracking-wide">Analyzing X-ray using
+                        AI…</p>
+                    <div class="w-full h-1.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                        <div class="loading-bar"></div>
+                    </div>
+                </div>
+
+                <!-- Result Panel -->
+                <div id="resultCard" class="hidden animate-fade-up" style="animation-delay:.1s">
+                    <div id="resultInner" class="card-glass rounded-2xl p-5 sm:p-6 transition-all duration-500">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2
+                                class="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2">
+                                <svg class="w-4 h-4 text-med-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Diagnosis
+                            </h2>
+                            <span id="resultBadge"
+                                class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest"></span>
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <p
+                                    class="text-[10px] uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-1">
+                                    Prediction</p>
+                                <p id="resultLabel" class="text-2xl sm:text-3xl font-black"></p>
+                            </div>
+                            <div>
+                                <p
+                                    class="text-[10px] uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2">
+                                    Confidence Level
+                                </p>
+                                <div class="flex items-center gap-3">
+                                    <div class="flex-1 h-3 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                                        <div id="confidenceBar"
+                                            class="h-full rounded-full transition-all duration-1000 ease-out"
+                                            style="width:0%"></div>
+                                    </div>
+                                    <span id="confidenceText" class="text-xl font-black tabular-nums"></span>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div
+                                    class="rounded-xl bg-emerald-50/60 dark:bg-emerald-500/10 border border-emerald-200/40 dark:border-emerald-500/20 p-3 text-center">
+                                    <p
+                                        class="text-[9px] uppercase tracking-widest text-emerald-500/70 dark:text-emerald-400/70 mb-0.5">
+                                        Normal
+                                    </p>
+                                    <p id="normalProb"
+                                        class="text-lg font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
+                                        --%</p>
+                                </div>
+                                <div
+                                    class="rounded-xl bg-red-50/60 dark:bg-red-500/10 border border-red-200/40 dark:border-red-500/20 p-3 text-center">
+                                    <p class="text-[9px] uppercase tracking-widest text-red-400/70 mb-0.5">Pneumonia</p>
+                                    <p id="pneumoniaProb"
+                                        class="text-lg font-bold text-red-500 dark:text-red-400 tabular-nums">--%</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-5">
+                            <button id="downloadBtn" class="w-full btn-download">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                Download Report (PDF)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error -->
+                <div id="errorCard"
+                    class="hidden card-glass rounded-2xl p-4 border-red-200/60 dark:border-red-500/20 text-red-600 dark:text-red-400 text-sm flex items-start gap-3"
+                    style="background:rgba(254,226,226,0.5); border:1px solid rgba(239,68,68,0.15);">
+                    <svg class="w-5 h-5 flex-shrink-0 mt-0.5 text-red-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                    <span id="errorText"></span>
+                </div>
+
+                <!-- Info note -->
+                <div class="card-glass rounded-2xl p-4 text-center animate-fade-up" style="animation-delay:.25s">
+                    <div class="flex items-center justify-center gap-2 text-slate-400 dark:text-slate-500 text-xs">
+                        <svg class="w-4 h-4 text-med-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>AI-generated results are for screening purposes only. Consult a medical professional for
+                            diagnosis.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── RIGHT: Chat Assistant (Inline Block) ─── -->
+            <div class="lg:col-span-4 animate-fade-up" style="animation-delay:.15s">
+                <div class="card-glass rounded-2xl overflow-hidden flex flex-col lg:sticky lg:top-20"
+                    style="height: 580px;">
+
+                    <!-- Chat Header -->
+                    <div
+                        class="px-5 py-4 bg-gradient-to-r from-med-500 to-med-600 text-white flex items-center justify-between shadow-sm shrink-0">
+                        <div class="flex items-center gap-2.5">
+                            <div
+                                class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-sm tracking-wide">PneumoBot</h3>
+                                <p class="text-[10px] text-sky-100 opacity-90">AI Lung Health Assistant</p>
+                            </div>
+                        </div>
+                        <span
+                            class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/15 text-[10px] font-medium">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            Online
+                        </span>
+                    </div>
+
+                    <!-- Messages Area -->
+                    <div id="chatMessages"
+                        class="flex-1 overflow-y-auto p-4 space-y-3 bg-white/30 dark:bg-slate-900/30 scroll-smooth">
+                        <!-- Welcome Message -->
+                        <div class="flex gap-2">
+                            <div
+                                class="w-6 h-6 rounded-full bg-med-100 dark:bg-med-500/20 flex-shrink-0 flex items-center justify-center">
+                                <svg class="w-3.5 h-3.5 text-med-600 dark:text-med-400" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                            </div>
+                            <div
+                                class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-sm rounded-2xl rounded-tl-none px-3.5 py-2.5 max-w-[85%]">
+                                <p class="text-[13px] text-slate-600 dark:text-slate-300 leading-relaxed">Hello! 👋 I'm
+                                    <strong>PneumoBot</strong>, your AI lung health assistant. Upload an X-ray and I'll
+                                    explain the results, or ask me anything about lung health.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Suggestions -->
+                    <div id="chatSuggestions"
+                        class="px-4 py-2 flex gap-2 overflow-x-auto no-scrollbar shrink-0 border-t border-slate-100/50 dark:border-slate-700/50">
+                        <button class="chat-chip">Explain my report</button>
+                        <button class="chat-chip">Is pneumonia contagious?</button>
+                        <button class="chat-chip">Precautions</button>
+                    </div>
+
+                    <!-- Input Area -->
+                    <div
+                        class="p-3 border-t border-slate-100 dark:border-slate-700/50 bg-white/60 dark:bg-slate-900/60 shrink-0">
+                        <form id="chatForm" class="flex gap-2">
+                            <input id="chatInput" type="text" placeholder="Ask a medical question..."
+                                class="flex-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-[13px] rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-med-400 focus:ring-1 focus:ring-med-400/20 transition placeholder:text-slate-400 dark:placeholder:text-slate-500" />
+                            <button type="submit"
+                                class="bg-med-500 hover:bg-med-600 text-white p-2.5 rounded-xl transition shadow-md shadow-med-500/20 disabled:opacity-50 disabled:cursor-not-allowed">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ══════════ FOOTER ══════════ -->
+    <footer class="relative z-10 text-center py-5 sm:py-6 border-t border-slate-200/60 dark:border-slate-700/40">
+        <p class="text-slate-400 dark:text-slate-500 text-xs tracking-wide">Made with <span
+                class="text-red-400">❤️</span> by <span
+                class="text-med-600 dark:text-med-400 font-semibold">Aditya</span></p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/static/js/charts.js"></script>
+    <script src="/static/js/main.js"></script>
+</body>
+
+</html>

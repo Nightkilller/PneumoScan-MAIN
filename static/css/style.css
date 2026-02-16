@@ -1,0 +1,477 @@
+/* ═══════════════════════════════════════════════════════════════
+   PneumoScan — Stylesheet (Light/Dark Theme)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── CSS Variables ────────────────────────────────────────────── */
+:root {
+    --text-base: 15px;
+    --glass-bg: rgba(255, 255, 255, 0.65);
+    --glass-border: rgba(255, 255, 255, 0.5);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+    --nav-glass: rgba(255, 255, 255, 0.7);
+}
+
+.dark {
+    --glass-bg: rgba(30, 41, 59, 0.6);
+    --glass-border: rgba(51, 65, 85, 0.4);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    --nav-glass: rgba(15, 23, 42, 0.75);
+}
+
+/* ── Base ──────────────────────────────────────────────────────── */
+body {
+    font-size: var(--text-base);
+    line-height: 1.6;
+}
+
+/* ── Glassmorphism ────────────────────────────────────────────── */
+.nav-glass {
+    background: var(--nav-glass);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border-bottom: 1px solid var(--glass-border);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.card-glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+}
+
+/* ── Ambient Background ───────────────────────────────────────── */
+.ambient-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.ambient-bg::before,
+.ambient-bg::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.3;
+    animation: drift 20s ease-in-out infinite;
+}
+
+.dark .ambient-bg::before,
+.dark .ambient-bg::after {
+    opacity: 0.12;
+}
+
+.ambient-bg::before {
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(14, 165, 233, 0.25), transparent 70%);
+    top: -100px;
+    left: -50px;
+}
+
+.ambient-bg::after {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(129, 140, 248, 0.2), transparent 70%);
+    bottom: -80px;
+    right: -60px;
+    animation-delay: -10s;
+}
+
+@keyframes drift {
+
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    33% {
+        transform: translate(30px, -20px) scale(1.05);
+    }
+
+    66% {
+        transform: translate(-20px, 15px) scale(0.95);
+    }
+}
+
+/* ── Animations ───────────────────────────────────────────────── */
+@keyframes fadeDown {
+    from {
+        opacity: 0;
+        transform: translateY(-12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-down {
+    animation: fadeDown 0.6s ease-out both;
+}
+
+.animate-fade-up {
+    animation: fadeUp 0.6s ease-out both;
+}
+
+/* ── Form Fields ──────────────────────────────────────────────── */
+.field-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+}
+
+:root .field-label {
+    color: #475569;
+}
+
+.dark .field-label {
+    color: #94a3b8;
+}
+
+.field-input {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    outline: none;
+    transition: all 0.2s;
+}
+
+:root .field-input {
+    background: rgba(255, 255, 255, 0.7);
+    color: #334155;
+}
+
+.dark .field-input {
+    background: rgba(30, 41, 59, 0.6);
+    border-color: rgba(71, 85, 105, 0.4);
+    color: #e2e8f0;
+}
+
+.field-input::placeholder {
+    color: #94a3b8;
+}
+
+.dark .field-input::placeholder {
+    color: #64748b;
+}
+
+.field-input:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+}
+
+/* ── Card Label ───────────────────────────────────────────────── */
+.card-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+}
+
+:root .card-label {
+    color: #94a3b8;
+}
+
+.dark .card-label {
+    color: #64748b;
+}
+
+/* ── Drop Zone ────────────────────────────────────────────────── */
+.drop-zone {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+    border-radius: 16px;
+    border: 2px dashed rgba(148, 163, 184, 0.35);
+    cursor: pointer;
+    transition: all 0.3s;
+    padding: 16px;
+}
+
+:root .drop-zone {
+    background: rgba(248, 250, 252, 0.6);
+}
+
+.dark .drop-zone {
+    background: rgba(30, 41, 59, 0.4);
+    border-color: rgba(71, 85, 105, 0.4);
+}
+
+.drop-zone:hover {
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.04);
+}
+
+.drop-zone.drag-over {
+    border-color: #0ea5e9;
+    background: rgba(14, 165, 233, 0.06);
+}
+
+/* ── Buttons ──────────────────────────────────────────────────── */
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 14px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    color: white;
+    box-shadow: 0 4px 14px rgba(14, 165, 233, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+:root .btn-secondary {
+    background: rgba(255, 255, 255, 0.6);
+    color: #475569;
+}
+
+.dark .btn-secondary {
+    background: rgba(51, 65, 85, 0.4);
+    color: #cbd5e1;
+    border-color: rgba(71, 85, 105, 0.4);
+}
+
+.btn-secondary:hover {
+    border-color: #94a3b8;
+    transform: translateY(-1px);
+}
+
+.btn-download {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 14px;
+    border: 1px solid rgba(14, 165, 233, 0.2);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+:root .btn-download {
+    background: rgba(14, 165, 233, 0.06);
+    color: #0284c7;
+}
+
+.dark .btn-download {
+    background: rgba(14, 165, 233, 0.1);
+    color: #38bdf8;
+    border-color: rgba(56, 189, 248, 0.2);
+}
+
+.btn-download:hover {
+    background: rgba(14, 165, 233, 0.12);
+    transform: translateY(-1px);
+}
+
+/* ── Chat Chips ───────────────────────────────────────────────── */
+.chat-chip {
+    flex-shrink: 0;
+    padding: 6px 12px;
+    font-size: 11px;
+    font-weight: 500;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    white-space: nowrap;
+}
+
+:root .chat-chip {
+    background: rgba(14, 165, 233, 0.08);
+    color: #0369a1;
+}
+
+.dark .chat-chip {
+    background: rgba(14, 165, 233, 0.12);
+    color: #7dd3fc;
+}
+
+.chat-chip:hover {
+    background: rgba(14, 165, 233, 0.18);
+    transform: translateY(-1px);
+}
+
+/* ── No scrollbar ─────────────────────────────────────────────── */
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* ── Chat Messages Scrollbar ──────────────────────────────────── */
+#chatMessages::-webkit-scrollbar {
+    width: 4px;
+}
+
+#chatMessages::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#chatMessages::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.25);
+    border-radius: 4px;
+}
+
+/* ── Loader ───────────────────────────────────────────────────── */
+.loader {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 3px solid rgba(14, 165, 233, 0.15);
+    border-top-color: #0ea5e9;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+    border-radius: 999px;
+    animation: loadProgress 3s ease-in-out infinite;
+}
+
+@keyframes loadProgress {
+    0% {
+        width: 0%;
+    }
+
+    50% {
+        width: 75%;
+    }
+
+    100% {
+        width: 100%;
+    }
+}
+
+/* ── Particles ────────────────────────────────────────────────── */
+.particle {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: float linear infinite;
+}
+
+:root .particle {
+    background: rgba(14, 165, 233, 0.08);
+}
+
+.dark .particle {
+    background: rgba(56, 189, 248, 0.06);
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    90% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-10vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* ── Responsive tweaks ────────────────────────────────────────── */
+@media (max-width: 1024px) {
+
+    .lg\:col-span-5,
+    .lg\:col-span-3,
+    .lg\:col-span-4 {
+        max-width: 100%;
+    }
+}
+
+/* ── Dark mode error card override ────────────────────────────── */
+.dark #errorCard {
+    background: rgba(127, 29, 29, 0.3) !important;
+    border-color: rgba(239, 68, 68, 0.2) !important;
+}
+
+/* ── Theme toggle transition ──────────────────────────────────── */
+html {
+    transition: color-scheme 0.3s;
+}
+
+html.dark {
+    color-scheme: dark;
+}
