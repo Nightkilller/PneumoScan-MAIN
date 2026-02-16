@@ -2,7 +2,7 @@
 
 A production-ready, Dockerized AI web application that detects **pneumonia from chest X-ray images** using deep learning, with an integrated AI medical assistant and PDF diagnostic reports.
 
-> **🔴 Live Demo:** [https://pneumoscan.onrender.com](srv-d69ndh15pdvs738lcd90) *(update with your Render URL)*
+> **🔴 Live Demo:** [srv-d69ndh15pdvs738lcd90](srv-d69ndh15pdvs738lcd90) *(update with your Render URL)*
 
 ---
 
