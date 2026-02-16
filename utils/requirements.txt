@@ -1,7 +1,0 @@
-flask
-gunicorn
-tensorflow-cpu
-numpy
-pillow
-matplotlib
-reportlab

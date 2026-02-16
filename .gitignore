@@ -1,42 +1,49 @@
-# 🔥 Python
+# Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
-# 🧪 Virtual environment
+# Virtual environment
 venv/
 env/
 .venv/
 
-# 🍏 macOS
+# macOS
 .DS_Store
 
-# 🔐 Environment variables / secrets
+# Environment variables / secrets
 .env
 
-# 📦 Model files (keep only the one you really need)
+# Model formats (keep .keras tracked)
 *.h5
-*.keras
 *.pt
 *.pth
 
-# 🧠 Jupyter
+# Jupyter
 .ipynb_checkpoints/
+*.ipynb
 
-# 🗂️ Logs
+# Datasets & notebooks
+datasets/
+notebooks/
+
+# Logs
 *.log
 
-# ⚙️ Build / cache
+# Build / cache
 build/
 dist/
 *.egg-info/
 
-# 🧰 VS Code
+# VS Code
 .vscode/
 
-# 🧪 Temporary uploads (if your app creates them)
-uploads/
+# Uploaded files (runtime-generated)
+static/uploads/
 
-# 🧨 System files
+# Node
+node_modules/
+
+# System files
 Thumbs.db
