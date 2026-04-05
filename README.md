@@ -45,7 +45,7 @@ PneumoScan/
 │   ├── pneumonia_model.keras   # Pneumonia classifier (~11 MB)
 │   └── xray_detector.keras     # X-ray validator (~10 MB)
 ├── static/
-│   ├── css/style.css           # UI styles
+│   ├── css/style.css           # UI style
 │   └── js/
 │       ├── main.js             # Core app logic
 │       ├── charts.js           # Confidence chart rendering
